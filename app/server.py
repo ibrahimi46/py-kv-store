@@ -6,7 +6,7 @@ def server():
     # AF_INET means use ipv4
     # SCOK_STREAM to use TCP
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind("127.0.0.1", 6379)
+    server.bind(("127.0.0.1", 6379))
     # 5 max connections at a time
     server.listen(5)
 
@@ -23,8 +23,8 @@ def server():
 
             response = "ERROR\n"
 
-            parts = request.split(" ")
-            request_type = parts[0]
+            parts = request.strip().split(" ")
+            request_type = parts[0].upper()
 
             if request_type == "SET" and len(parts) > 2:
                 request_key = parts[1]
@@ -37,11 +37,11 @@ def server():
                 response = DATA_STORE.get(request_key, "nil\n") + "\n"
 
             elif request_type == "EXIT":
-                client_socket.send("BYE\n".encode())
+                client_socket.send("BYE\n".encode("utf-8"))
                 break
 
-            client_socket.send(response.encode)
-            
+            client_socket.send(response.encode("utf-8"))
+
         client_socket.close()
 
 
